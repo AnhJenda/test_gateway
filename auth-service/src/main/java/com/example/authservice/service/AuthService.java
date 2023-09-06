@@ -30,7 +30,7 @@ public class AuthService {
         //do validation if user already exists
         authRequest.setPassword(BCrypt.hashpw(authRequest.getPassword(), BCrypt.gensalt()));
 
-        UserVO userVO = restTemplate.postForObject("http://user-service/users", authRequest, UserVO.class);
+        UserVO userVO = restTemplate.postForObject("http://localhost:8801/users/save", authRequest, UserVO.class);
         Assert.notNull(userVO, "Failed to register user. Please try again later");
 
         String accessToken = jwt.generate(userVO, "ACCESS");

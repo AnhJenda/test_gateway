@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
+import java.io.Serializable;
+
 /*
     @author: Dinh Quang Anh
     Date   : 9/6/2023
@@ -18,7 +20,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -26,5 +28,5 @@ public class User {
     private String email;
     private String password;
     private String role;
-    private String videoId;
+    private String videoId = null;
 }
