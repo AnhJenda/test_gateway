@@ -22,10 +22,10 @@ public class UserController {
         return userService.save(user);
     }
 
-    @GetMapping
+    @GetMapping(value = "/get")
     public User getUser(
-            @RequestHeader(value = "id") String userId,
-            @RequestHeader(value = "role") String role) {
+            @RequestParam(required = false) String userId,
+            @RequestParam(required = false) String role) {
         long id = Long.valueOf(userId);
         return userService.getById(id);
     }

@@ -21,7 +21,7 @@ public class GatewayConfig {
     @Bean
     public RouteLocator routes(RouteLocatorBuilder builder) {
         return builder.routes()
-                .route("user-list", r -> r.path("/users")
+                .route("user-list", r -> r.path("/users/get")
                         .filters(f -> f.filter(filter))
                         .uri("lb://user-service"))
 
@@ -40,6 +40,7 @@ public class GatewayConfig {
                 .csrf().disable() // Tắt CSRF protection
                 .authorizeExchange()
                 .pathMatchers("/auth/register**").permitAll() // Cấu hình các endpoint public
+                .pathMatchers("/users/**").hasRole("manager")
                 .anyExchange().authenticated(); // Yêu cầu xác thực cho các endpoint khác
 
         return http.build();
