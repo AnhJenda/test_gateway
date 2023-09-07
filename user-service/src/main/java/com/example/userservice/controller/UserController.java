@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
     Project: user-service
 */
 @RestController
+@CrossOrigin()
 @RequestMapping(value = "/users")
 public class UserController {
 
@@ -23,11 +24,13 @@ public class UserController {
     }
 
     @GetMapping(value = "/get")
-    public User getUser(
-            @RequestParam(required = false) String userId,
-            @RequestParam(required = false) String role) {
-        long id = Long.valueOf(userId);
-        return userService.getById(id);
+    public User getUser(@RequestParam long userId) {
+        return userService.getById(userId);
+    }
+
+    @GetMapping(value = "/getByEmail")
+    public User getUser(@RequestParam String email) {
+        return userService.getUserByEmail(email);
     }
 
     @GetMapping(value = "/secure")

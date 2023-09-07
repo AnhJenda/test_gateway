@@ -1,11 +1,9 @@
 package com.example.authservice.entities.value_object;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
+import java.util.List;
 
 /*
     @author: Dinh Quang Anh
@@ -15,12 +13,14 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
+@Getter
+@Setter
 public class UserVO implements Serializable {
-    private String id;
-    private String email;
-    private String password;
+    private long id;
     private String firstName;
     private String lastName;
+    private String email;
+    private String password;
     private String role;
+    private String videoId = null;
 }

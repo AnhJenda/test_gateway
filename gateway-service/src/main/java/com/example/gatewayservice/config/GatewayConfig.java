@@ -3,20 +3,23 @@ package com.example.gatewayservice.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
-import org.springframework.cloud.netflix.hystrix.EnableHystrix;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
+
 @Configuration
-@EnableHystrix
 @EnableWebSecurity
 public class GatewayConfig {
 
+    private final AuthenticationFilter filter;
+
     @Autowired
-    AuthenticationFilter filter;
+    public GatewayConfig(AuthenticationFilter filter) {
+        this.filter = filter;
+    }
 
     @Bean
     public RouteLocator routes(RouteLocatorBuilder builder) {
@@ -32,17 +35,21 @@ public class GatewayConfig {
                 .route("auth-service", r -> r.path("/auth/register")
                         .filters(f -> f.filter(filter))
                         .uri("lb://auth-service"))
+                .route("auth-login", r -> r.path("/auth/login")
+                        .filters(f -> f.filter(filter))
+                        .uri("lb://auth-service"))
                 .build();
     }
-    @Bean
-    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
-        http
-                .csrf().disable() // Tắt CSRF protection
-                .authorizeExchange()
-                .pathMatchers("/auth/register**").permitAll() // Cấu hình các endpoint public
-                .pathMatchers("/users/**").hasRole("manager")
-                .anyExchange().authenticated(); // Yêu cầu xác thực cho các endpoint khác
 
-        return http.build();
+    @Bean
+    public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
+        return http
+                .csrf().disable()
+                .authorizeExchange()
+                .pathMatchers("/auth/register**", "/auth/login**").permitAll()
+                .anyExchange().authenticated()
+                .and()
+                .build();
     }
+
 }

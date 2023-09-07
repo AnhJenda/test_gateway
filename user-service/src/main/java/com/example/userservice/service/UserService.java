@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Objects;
+
 /*
     @author: Dinh Quang Anh
     Date   : 9/6/2023
@@ -39,6 +41,14 @@ public class UserService {
 
         Video video = restTemplate.getForObject("http://video" + user.getVideoId(), Video.class);
 
+        return user;
+    }
+
+    public User getUserByEmail(String email){
+        User user = repository.getUserByEmail(email);
+        if (Objects.isNull(user)){
+            return null;
+        }
         return user;
     }
 }

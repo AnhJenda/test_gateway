@@ -5,22 +5,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
 
 /*
     @author: Dinh Quang Anh
-    Date   : 9/6/2023
-    Project: auth-service
+    Date   : 8/4/2023
+    Project: spring_school_api
 */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class AuthRequest implements Serializable {
-
+public class SignupRequest {
     private String email;
     private String password;
     private String firstName;
     private String lastName;
-    private String role;
+    private List<String> role;
 }
