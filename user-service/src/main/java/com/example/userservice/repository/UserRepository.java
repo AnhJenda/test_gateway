@@ -4,6 +4,9 @@ import com.example.userservice.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Optional;
+
 /*
     @author: Dinh Quang Anh
     Date   : 9/6/2023
@@ -12,5 +15,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     User getUserById(long id);
-    User getUserByEmail(String email);
+    Optional<User> getUserByEmail(String email);
+    User findUserByEmail(String email);
+    boolean existsByEmail(String username);
+    List<User> findAll();
 }

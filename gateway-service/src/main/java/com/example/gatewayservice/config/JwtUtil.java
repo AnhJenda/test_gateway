@@ -22,11 +22,21 @@ public class JwtUtil {
     private String expirationTime;
 
 
-    public void validateToken(final String token) {
-        Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token);
+    public void validateJwtToken(String authToken) {
+        try {
+            Jwts.parserBuilder().setSigningKey(getSignKey()).build().parse(authToken);
+        } catch (MalformedJwtException e) {
+            logger.error("Invalid JWT token: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            logger.error("JWT token is expired: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            logger.error("JWT token is unsupported: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.error("JWT claims string is empty: {}", e.getMessage());
+        }
     }
 
-    private Key getSignKey() {
+    public Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }

@@ -1,23 +1,24 @@
-package com.example.authservice.config;
+package com.example.userservice.config;
 
-import com.example.authservice.entities.SignupRequest;
+import com.example.userservice.entities.User;
+import com.example.userservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 @Component
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
-    RestTemplate restTemplate;
+    UserRepository repository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        SignupRequest credential = restTemplate.getForObject("http://localhost:8801/users/getByEmail", SignupRequest.class, username);
-        return (UserDetails) Mono.just(credential).map(CustomUserDetails::new);
+        Optional<User> credential = repository.getUserByEmail(username);
+        return credential.map(user -> new CustomUserDetails(user)).orElseThrow(() -> new UsernameNotFoundException("user not found with name :" + username));
     }
 }

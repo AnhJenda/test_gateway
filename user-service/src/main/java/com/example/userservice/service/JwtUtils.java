@@ -1,13 +1,16 @@
-package com.example.authservice.service;
+package com.example.userservice.service;
 
-import com.example.authservice.entities.value_object.UserVO;
-import io.jsonwebtoken.*;
+import com.example.userservice.entities.User;
+import com.example.userservice.repository.UserRepository;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
 import java.util.Date;
@@ -24,6 +27,9 @@ import java.util.Map;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
+    @Autowired
+    UserRepository repository;
+
     @Value("${jwt.secret}")
     private String secret;
 
@@ -37,6 +43,8 @@ public class JwtUtils {
 
     public String generateToken(String userName) {
         Map<String, Object> claims = new HashMap<>();
+        User user = repository.findUserByEmail(userName);
+        claims.put("role", user.getRole());
         return createToken(claims, userName);
     }
 
@@ -45,7 +53,7 @@ public class JwtUtils {
                 .setClaims(claims)
                 .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
 

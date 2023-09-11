@@ -20,7 +20,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class User implements Serializable {
+public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

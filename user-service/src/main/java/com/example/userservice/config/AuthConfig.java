@@ -1,4 +1,4 @@
-package com.example.authservice.config;
+package com.example.userservice.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,12 +22,11 @@ public class AuthConfig {
         return new CustomUserDetailsService();
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf().disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/auth/register", "/auth/login").permitAll()
+                .requestMatchers("/auth/register**", "/auth/login**").permitAll()
                 .and()
                 .build();
     }

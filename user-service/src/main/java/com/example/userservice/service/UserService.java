@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /*
     @author: Dinh Quang Anh
@@ -44,11 +46,16 @@ public class UserService {
         return user;
     }
 
-    public User getUserByEmail(String email){
-        User user = repository.getUserByEmail(email);
+    public Optional<User> getUserByEmail(String email){
+        Optional<User> user = repository.getUserByEmail(email);
         if (Objects.isNull(user)){
+            System.out.println("user not found");
             return null;
         }
         return user;
+    }
+
+    public List<User> findAll(){
+        return repository.findAll();
     }
 }

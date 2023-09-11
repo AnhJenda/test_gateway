@@ -1,55 +1,59 @@
 package com.example.gatewayservice.config;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.gateway.config.GatewayAutoConfiguration;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.reactive.config.EnableWebFlux;
+
+import java.io.IOException;
 
 
 @Configuration
-@EnableWebSecurity
-public class GatewayConfig {
-
-    private final AuthenticationFilter filter;
+@EnableWebFlux
+public class GatewayConfig extends GatewayAutoConfiguration{
 
     @Autowired
-    public GatewayConfig(AuthenticationFilter filter) {
-        this.filter = filter;
-    }
+    private AuthenticationFilter authenticationFilter;
 
     @Bean
-    public RouteLocator routes(RouteLocatorBuilder builder) {
-        return builder.routes()
-                .route("user-list", r -> r.path("/users/get")
-                        .filters(f -> f.filter(filter))
-                        .uri("lb://user-service"))
-
-                .route("user-test", r -> r.path("/test")
-                        .filters(f -> f.filter(filter))
-                        .uri("lb://user-service"))
-
-                .route("auth-service", r -> r.path("/auth/register")
-                        .filters(f -> f.filter(filter))
-                        .uri("lb://auth-service"))
-                .route("auth-login", r -> r.path("/auth/login")
-                        .filters(f -> f.filter(filter))
-                        .uri("lb://auth-service"))
-                .build();
-    }
-
-    @Bean
-    public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf().disable()
                 .authorizeExchange()
-                .pathMatchers("/auth/register**", "/auth/login**").permitAll()
+                // Các endpoint không cần xác thực
+                .pathMatchers("/auth/**").permitAll()
+                // Các endpoint cần xác thực và quyền truy cập
+                .pathMatchers("/users/getall").hasAuthority("manager")
                 .anyExchange().authenticated()
                 .and()
                 .build();
     }
 
+    @Bean
+    public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
+        return builder.routes()
+                // Các route không cần xác thực
+                .route("auth-service", r -> r.path("/auth/**")
+                        .filters(f -> f.filter(authenticationFilter))
+                        .uri("lb://user-service"))
+                // Các route cần xác thực
+                .route("user-service", r -> r.path("/users/**")
+                        .filters(f -> f.filter(authenticationFilter))
+                        .uri("lb://user-service"))
+                .build();
+    }
 }

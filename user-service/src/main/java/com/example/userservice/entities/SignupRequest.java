@@ -1,4 +1,4 @@
-package com.example.authservice.entities;
+package com.example.userservice.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-import java.util.Set;
 
 /*
     @author: Dinh Quang Anh
@@ -22,5 +21,5 @@ public class SignupRequest {
     private String password;
     private String firstName;
     private String lastName;
-    private List<String> role;
+    private String role;
 }

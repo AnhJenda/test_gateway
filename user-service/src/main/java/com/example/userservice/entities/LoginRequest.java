@@ -1,4 +1,4 @@
-package com.example.authservice.entities;
+package com.example.userservice.entities;
 /*
     @author: Dinh Quang Anh
     Date   : 8/4/2023
